@@ -16,7 +16,7 @@ class MediaModule
         $payload = $request instanceof DownloadMediaRequest ? $request->toArray() : $request;
         $data = $this->client->post("/api/v1/sessions/{$sessionId}/media/download", $payload, $token);
 
-        return DownloadMediaResponse::fromArray((array) $data);
+        return DownloadMediaResponse::fromArray($data);
     }
 
     public function upload(string $sessionId, array $data = [], ?string $token = null): UploadMediaResponse
