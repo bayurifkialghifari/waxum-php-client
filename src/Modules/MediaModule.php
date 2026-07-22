@@ -2,7 +2,7 @@
 
 namespace Bayurifkialghifari\WaxumApi\Modules;
 
-use Bayurifkialghifari\WaxumApi\DTOs\Common\UploadMediaResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Media\UploadMediaResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Media\DownloadMediaRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Media\DownloadMediaResponse;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
