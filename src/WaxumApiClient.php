@@ -131,28 +131,59 @@ class WaxumApiClient
             };
 
             if ($response->failed()) {
-                $body = $response->json() ?? [];
-                throw new WaxumApiException(
-                    $body['message'] ?? $body['error'] ?? 'Waxum API request failed',
-                    $body['code'] ?? $response->status(),
-                    $body
-                );
+                $body = is_array($response->json()) ? $response->json() : [];
+                $rawError = $body['message'] ?? $body['error'] ?? null;
+                $message = $this->resolveErrorMessage($rawError, 'Waxum API request failed');
+                $code = isset($body['code']) && is_numeric($body['code']) ? (int) $body['code'] : $response->status();
+
+                throw new WaxumApiException($message, $code, $body);
             }
 
             $body = $response->json();
 
-            if (isset($body['success']) && $body['success'] === false) {
-                throw new WaxumApiException(
-                    $body['error'] ?? $body['message'] ?? 'API request failed',
-                    $body['code'] ?? 0,
-                    $body
-                );
+            if (is_array($body) && isset($body['success']) && $body['success'] === false) {
+                $rawError = $body['error'] ?? $body['message'] ?? null;
+                $message = $this->resolveErrorMessage($rawError, 'API request failed');
+                $code = isset($body['code']) && is_numeric($body['code']) ? (int) $body['code'] : 0;
+
+                throw new WaxumApiException($message, $code, $body);
             }
 
-            return $body['data'] ?? $body;
+            return is_array($body) && isset($body['data']) ? $body['data'] : $body;
         } catch (RequestException $e) {
             throw new WaxumApiException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Resolve error message into a human-readable string.
+     */
+    protected function resolveErrorMessage(mixed $error, string $default): string
+    {
+        if (is_string($error) && trim($error) !== '') {
+            return $error;
+        }
+
+        if (is_array($error)) {
+            if (isset($error['message']) && is_string($error['message'])) {
+                return $error['message'];
+            }
+            if (isset($error['error']) && is_string($error['error'])) {
+                return $error['error'];
+            }
+
+            $stringItems = array_filter(array_values($error), fn ($item) => is_string($item) && trim($item) !== '');
+            if (! empty($stringItems)) {
+                return implode(', ', $stringItems);
+            }
+
+            $encoded = json_encode($error);
+            if ($encoded !== false) {
+                return $encoded;
+            }
+        }
+
+        return $default;
     }
 
     public function get(string $endpoint, array $query = [], ?string $token = null): mixed

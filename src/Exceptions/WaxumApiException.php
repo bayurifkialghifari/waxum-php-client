@@ -7,10 +7,14 @@ use Exception;
 class WaxumApiException extends Exception
 {
     public function __construct(
-        string $message,
+        mixed $message = '',
         int $code = 0,
         public readonly mixed $details = null,
     ) {
-        parent::__construct($message, $code);
+        $resolvedMessage = is_string($message)
+            ? $message
+            : (is_array($message) ? (json_encode($message) ?: 'Waxum API Exception') : (string) $message);
+
+        parent::__construct($resolvedMessage, $code);
     }
 }

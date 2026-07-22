@@ -53,3 +53,28 @@ it('sends Authorization header with Bearer token', function () {
         return $request->hasHeader('Authorization', 'Bearer test-token');
     });
 });
+
+it('handles array error response messages without TypeError', function () {
+    Http::fake([
+        'http://localhost:3451/api/v1/sessions' => Http::response([
+            'success' => false,
+            'code' => 422,
+            'message' => ['to field is required', 'text field is required'],
+        ], 422),
+    ]);
+
+    try {
+        $this->client->get('/api/v1/sessions');
+        $this->fail('Expected WaxumApiException to be thrown');
+    } catch (WaxumApiException $e) {
+        expect($e->getMessage())->toBe('to field is required, text field is required')
+            ->and($e->getCode())->toBe(422);
+    }
+});
+
+it('constructs WaxumApiException safely when passed an array message', function () {
+    $exception = new WaxumApiException(['error' => 'array message'], 500);
+
+    expect($exception->getMessage())->toBe('{"error":"array message"}')
+        ->and($exception->getCode())->toBe(500);
+});
