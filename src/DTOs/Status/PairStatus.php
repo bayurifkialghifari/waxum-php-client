@@ -5,7 +5,7 @@ namespace Bayurifkialghifari\WaxumApi\DTOs\Status;
 class PairStatus
 {
     public function __construct(
-        public readonly int $attempts,
+        public readonly ?int $attempts = null,
         public readonly ?string $lastError = null,
         public readonly ?int $lastPairCodeAt = null,
         public readonly ?int $lastQrAt = null,

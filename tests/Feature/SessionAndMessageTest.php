@@ -4,6 +4,8 @@ use Bayurifkialghifari\WaxumApi\DTOs\Common\SendResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Session\CreateSessionResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Session\SessionInfo;
 use Bayurifkialghifari\WaxumApi\DTOs\Session\SessionListResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Session\SessionStatusResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Status\PairStatus;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
 use Illuminate\Support\Facades\Http;
 
@@ -73,4 +75,31 @@ it('creates a session returning SessionInfo object', function () {
         ->and($response->session->name)->toBe('TEst')
         ->and($response->session->status)->toBe('disconnected')
         ->and($response->session->isLoggedIn)->toBeFalse();
+});
+
+it('gets session status returning PairStatus object', function () {
+    Http::fake([
+        'http://localhost:3451/api/v1/sessions/session-1/status' => Http::response([
+            'status' => 'waiting_for_qr',
+            'is_logged_in' => false,
+            'phone_number' => null,
+            'push_name' => null,
+            'pair' => [
+                'last_qr_at' => 1784708453,
+                'last_pair_code_at' => null,
+                'pair_code_expires_at' => null,
+                'last_error' => null,
+                'attempts' => 5,
+            ],
+        ]),
+    ]);
+
+    $response = $this->client->session->getStatus('session-1');
+
+    expect($response)->toBeInstanceOf(SessionStatusResponse::class)
+        ->and($response->pair)->toBeInstanceOf(PairStatus::class)
+        ->and($response->pair->lastQrAt)->toBe(1784708453)
+        ->and($response->pair->attempts)->toBe(5)
+        ->and($response->status)->toBe('waiting_for_qr')
+        ->and($response->isLoggedIn)->toBeFalse();
 });
