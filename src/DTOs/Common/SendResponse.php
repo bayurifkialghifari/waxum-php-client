@@ -8,7 +8,7 @@ class SendResponse
         public readonly ?string $messageId,
         public readonly ?string $scheduleId,
         public readonly ?string $sendAt,
-        public readonly string $status,
+        public readonly ?string $status,
         public readonly ?int $timestamp = null,
         public readonly ?string $to = null,
     ) {}
