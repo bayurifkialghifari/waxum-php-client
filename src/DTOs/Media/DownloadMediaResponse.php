@@ -8,10 +8,10 @@ class DownloadMediaResponse
         public readonly string $data,
     ) {}
 
-    public static function fromArray(array $data): self
+    public static function fromArray(string $data): self
     {
         return new self(
-            data: isset($data['data']) ? (string) $data['data'] : null,
+            data: $data ?? null,
         );
     }
 
