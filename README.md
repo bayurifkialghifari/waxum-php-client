@@ -4,7 +4,7 @@
 [![Tests](https://img.shields.io/github/actions/workflow/status/bayurifkialghifari/waxum-php-client/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/bayurifkialghifari/waxum-php-client/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/bayurifkialghifari/waxum-php-client.svg?style=flat-square)](https://packagist.org/packages/bayurifkialghifari/waxum-php-client)
 
-A Laravel PHP client library for the [Waxum WhatsApp API Gateway](https://waxum.karuhundeveloper.com/api-docs/openapi.json). Provides a clean, modular interface to interact with WhatsApp through your Waxum server instance.
+A Laravel PHP client library for the [Waxum WhatsApp API Gateway](https://github.com/imtaqin/waxum). Provides a clean, modular interface to interact with WhatsApp through your Waxum server instance.
 
 ## Features
 
