@@ -1,0 +1,36 @@
+<?php
+
+namespace Bayurifkialghifari\WaxumApi\DTOs\Session;
+
+class SessionStatusResponse
+{
+    public function __construct(
+        public readonly bool $isLoggedIn,
+        public readonly mixed $pair,
+        public readonly ?string $phoneNumber,
+        public readonly ?string $pushName,
+        public readonly mixed $status,
+    ) {}
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            isLoggedIn: (bool) ($data['is_logged_in'] ?? false),
+            pair: $data['pair'] ?? null,
+            phoneNumber: isset($data['phone_number']) ? (string) $data['phone_number'] : null,
+            pushName: isset($data['push_name']) ? (string) $data['push_name'] : null,
+            status: $data['status'] ?? null,
+        );
+    }
+
+    public function toArray(): array
+    {
+        return array_filter([
+            'is_logged_in' => $this->isLoggedIn,
+            'pair' => $this->pair,
+            'phone_number' => $this->phoneNumber,
+            'push_name' => $this->pushName,
+            'status' => $this->status,
+        ], fn ($val) => $val !== null);
+    }
+}
