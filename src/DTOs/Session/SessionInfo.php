@@ -5,15 +5,15 @@ namespace Bayurifkialghifari\WaxumApi\DTOs\Session;
 class SessionInfo
 {
     public function __construct(
-        public readonly int $createdAt,
-        public readonly string $id,
+        public readonly ?int $createdAt,
+        public readonly ?string $id,
         public readonly bool $isLoggedIn,
         public readonly ?int $lastConnectedAt,
         public readonly ?string $name,
         public readonly ?string $phoneNumber,
         public readonly ?string $pushName,
         public readonly mixed $status,
-        public readonly int $updatedAt,
+        public readonly ?int $updatedAt,
     ) {}
 
     public static function fromArray(array $data): self

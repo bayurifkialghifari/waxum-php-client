@@ -1,6 +1,8 @@
 <?php
 
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Session\CreateSessionResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Session\SessionInfo;
 use Bayurifkialghifari\WaxumApi\DTOs\Session\SessionListResponse;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
 use Illuminate\Support\Facades\Http;
@@ -22,7 +24,10 @@ it('lists all sessions', function () {
     $response = $this->client->session->list();
 
     expect($response)->toBeInstanceOf(SessionListResponse::class)
-        ->and($response->sessions)->toHaveCount(1);
+        ->and($response->sessions)->toHaveCount(1)
+        ->and($response->sessions[0])->toBeInstanceOf(SessionInfo::class)
+        ->and($response->sessions[0]->id)->toBe('session-1');
+
 });
 
 it('sends text message', function () {
@@ -41,4 +46,31 @@ it('sends text message', function () {
 
     expect($response)->toBeInstanceOf(SendResponse::class)
         ->and($response->messageId)->toBe('msg-123');
+});
+
+it('creates a session returning SessionInfo object', function () {
+    Http::fake([
+        'http://localhost:3451/api/v1/sessions' => Http::response([
+            'session' => [
+                'id' => 'device-6a607b96ccfa31784707990',
+                'name' => 'TEst',
+                'phone_number' => null,
+                'push_name' => null,
+                'status' => 'disconnected',
+                'created_at' => 1784707991,
+                'updated_at' => 1784707991,
+                'last_connected_at' => null,
+                'is_logged_in' => false,
+            ],
+        ]),
+    ]);
+
+    $response = $this->client->session->create(['name' => 'TEst']);
+
+    expect($response)->toBeInstanceOf(CreateSessionResponse::class)
+        ->and($response->session)->toBeInstanceOf(SessionInfo::class)
+        ->and($response->session->id)->toBe('device-6a607b96ccfa31784707990')
+        ->and($response->session->name)->toBe('TEst')
+        ->and($response->session->status)->toBe('disconnected')
+        ->and($response->session->isLoggedIn)->toBeFalse();
 });
