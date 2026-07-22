@@ -2,21 +2,17 @@
 
 namespace Bayurifkialghifari\WaxumApi\DTOs\ChatState;
 
-class ChatStateType
+enum ChatStateType: string
 {
-    public function __construct(
+    case COMPOSING = 'composing';
+    case RECORDING = 'recording';
+    case PAUSED = 'paused';
 
-    ) {}
-
-    public static function fromArray(array $data): self
+    /**
+     * @return string[]
+     */
+    public static function values(): array
     {
-        return new self;
-    }
-
-    public function toArray(): array
-    {
-        return array_filter([
-
-        ], fn ($val) => $val !== null);
+        return array_column(self::cases(), 'value');
     }
 }

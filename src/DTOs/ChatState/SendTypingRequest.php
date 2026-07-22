@@ -2,23 +2,18 @@
 
 namespace Bayurifkialghifari\WaxumApi\DTOs\ChatState;
 
-class SendChatStateRequest
+class SendTypingRequest
 {
     public function __construct(
         public readonly string $to,
-        public readonly ChatStateType|string $state,
+        public readonly ?int $duration = null,
     ) {}
 
     public static function fromArray(array $data): self
     {
-        $state = $data['state'] ?? null;
-        if (is_string($state)) {
-            $state = ChatStateType::tryFrom($state) ?? $state;
-        }
-
         return new self(
             to: (string) ($data['to'] ?? ''),
-            state: $state ?? '',
+            duration: isset($data['duration']) ? (int) $data['duration'] : null,
         );
     }
 
@@ -26,7 +21,7 @@ class SendChatStateRequest
     {
         return array_filter([
             'to' => $this->to,
-            'state' => $this->state instanceof ChatStateType ? $this->state->value : $this->state,
+            'duration' => $this->duration,
         ], fn ($val) => $val !== null);
     }
 }
