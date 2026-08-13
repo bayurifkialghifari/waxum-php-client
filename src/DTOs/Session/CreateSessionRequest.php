@@ -8,6 +8,7 @@ class CreateSessionRequest
         public readonly mixed $device = null,
         public readonly ?string $id = null,
         public readonly ?string $name = null,
+        public readonly ?bool $reuse = null,
         public readonly mixed $webhook = null,
     ) {}
 
@@ -17,6 +18,7 @@ class CreateSessionRequest
             device: $data['device'] ?? null,
             id: isset($data['id']) ? (string) $data['id'] : null,
             name: isset($data['name']) ? (string) $data['name'] : null,
+            reuse: isset($data['reuse']) ? (bool) $data['reuse'] : null,
             webhook: $data['webhook'] ?? null,
         );
     }
@@ -27,6 +29,7 @@ class CreateSessionRequest
             'device' => $this->device,
             'id' => $this->id,
             'name' => $this->name,
+            'reuse' => $this->reuse,
             'webhook' => $this->webhook,
         ], fn ($val) => $val !== null);
     }

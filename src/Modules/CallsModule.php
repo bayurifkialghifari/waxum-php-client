@@ -10,9 +10,12 @@ use Bayurifkialghifari\WaxumApi\DTOs\Common\RingCallRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\RingCallResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SuccessResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\TerminateCallRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\TranscriptResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\TtsCallRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\TtsCallResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\VoiceEntry;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
+use Illuminate\Http\Client\Response;
 
 class CallsModule
 {
@@ -64,5 +67,43 @@ class CallsModule
         $data = $this->client->post("/api/v1/sessions/{$sessionId}/calls/tts", $payload, $token);
 
         return TtsCallResponse::fromArray((array) $data);
+    }
+
+    /**
+     * List the available Edge-TTS voices.
+     *
+     * @return VoiceEntry[]
+     */
+    public function voices(?string $token = null): array
+    {
+        $data = $this->client->get('/api/v1/voices', [], $token);
+
+        return array_map(fn (array $voice) => VoiceEntry::fromArray($voice), (array) $data);
+    }
+
+    /**
+     * Preview a TTS voice as an audio/mpeg stream.
+     */
+    public function ttsPreview(string $text, string $voice, ?string $token = null): Response
+    {
+        return $this->client->requestRaw('GET', '/api/v1/tts/preview', [
+            'text' => $text,
+            'voice' => $voice,
+        ], $token);
+    }
+
+    /**
+     * Download the WAV recording of a finished call.
+     */
+    public function recording(string $sessionId, string $callId, ?string $token = null): Response
+    {
+        return $this->client->requestRaw('GET', "/api/v1/sessions/{$sessionId}/calls/{$callId}/recording.wav", [], $token);
+    }
+
+    public function transcript(string $sessionId, string $callId, ?string $token = null): TranscriptResponse
+    {
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/calls/{$callId}/transcript", [], $token);
+
+        return TranscriptResponse::fromArray((array) $data);
     }
 }

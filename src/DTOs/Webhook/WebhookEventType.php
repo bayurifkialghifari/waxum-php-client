@@ -33,7 +33,10 @@ enum WebhookEventType: string
     case SCHEDULED_FAILED = 'scheduled_failed';
     case BLAST_PROGRESS = 'blast_progress';
     case BLAST_COMPLETED = 'blast_completed';
-    case KEEP_ALIVE_TIMEOUT = 'keep_alive_timeout';
+    case ACCOUNT_LOCKED = 'account_locked';
+    case CALL_LOG_SYNC = 'call_log_sync';
+    case STREAM_ERROR = 'stream_error';
+    case ENC_DECRYPT_FAILED = 'enc_decrypt_failed';
 
     /**
      * @return string[]

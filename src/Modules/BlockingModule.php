@@ -2,10 +2,10 @@
 
 namespace Bayurifkialghifari\WaxumApi\Modules;
 
-use Bayurifkialghifari\WaxumApi\DTOs\Blocking\BlockStatusResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\BlocklistResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\BlockRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SuccessResponse;
+use Bayurifkialghifari\WaxumApi\DTOs\Status\BlockStatusResponse;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
 
 class BlockingModule

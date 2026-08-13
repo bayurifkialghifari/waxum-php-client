@@ -6,6 +6,8 @@ class SendTextRequest
 {
     public function __construct(
         public readonly mixed $fakeReply = null,
+        public readonly ?bool $mentionAll,
+        public readonly ?array $mentions,
         public readonly ?string $replyTo,
         public readonly ?string $sendAt,
         public readonly string $text,
@@ -16,6 +18,8 @@ class SendTextRequest
     {
         return new self(
             fakeReply: $data['fake_reply'] ?? null,
+            mentionAll: isset($data['mention_all']) ? (bool) $data['mention_all'] : null,
+            mentions: isset($data['mentions']) ? (array) $data['mentions'] : null,
             replyTo: isset($data['reply_to']) ? (string) $data['reply_to'] : null,
             sendAt: isset($data['send_at']) ? (string) $data['send_at'] : null,
             text: isset($data['text']) ? (string) $data['text'] : null,
@@ -27,6 +31,8 @@ class SendTextRequest
     {
         return array_filter([
             'fake_reply' => $this->fakeReply,
+            'mention_all' => $this->mentionAll,
+            'mentions' => $this->mentions,
             'reply_to' => $this->replyTo,
             'send_at' => $this->sendAt,
             'text' => $this->text,
