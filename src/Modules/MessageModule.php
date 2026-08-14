@@ -2,16 +2,22 @@
 
 namespace Bayurifkialghifari\WaxumApi\Modules;
 
+use Bayurifkialghifari\WaxumApi\DTOs\Common\CancelPaymentRequestRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\DeclinePaymentRequestRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\MarkAsReadRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\RequestPaymentRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendAudioRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendButtonsRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendButtonsResponseRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendCommentRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendContactRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendCtaUrlRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendDocumentRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendHighlyStructuredRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendImageRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendInteractiveRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendInteractiveResponseRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendInvoiceRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendListRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendListResponseRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendLocationRequest;
@@ -20,10 +26,13 @@ use Bayurifkialghifari\WaxumApi\DTOs\Common\SendPaymentInviteRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendPaymentRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendPollRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendPollUpdateRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendQuickReplyRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendReactionRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendScheduledCallEditRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendScheduledCallRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendStickerRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Common\SendTemplateButtonReplyRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendTextRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Common\SendVideoRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Message\EditMessageRequest;
@@ -32,6 +41,7 @@ use Bayurifkialghifari\WaxumApi\DTOs\Message\MessageResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Message\MessageSearchResponse;
 use Bayurifkialghifari\WaxumApi\DTOs\Message\RevokeMessageRequest;
 use Bayurifkialghifari\WaxumApi\DTOs\Message\SendPinMessageRequest;
+use Bayurifkialghifari\WaxumApi\DTOs\Message\SessionMessagesResponse;
 use Bayurifkialghifari\WaxumApi\WaxumApiClient;
 
 class MessageModule
@@ -275,5 +285,97 @@ class MessageModule
         ]), $token);
 
         return MessageSearchResponse::fromArray((array) $data);
+    }
+
+    public function listMessages(string $sessionId, ?int $after = null, ?int $limit = null, ?string $token = null): SessionMessagesResponse
+    {
+        $data = $this->client->get("/api/v1/sessions/{$sessionId}/messages", array_filter([
+            'after' => $after,
+            'limit' => $limit,
+        ], fn ($val) => $val !== null), $token);
+
+        return SessionMessagesResponse::fromArray((array) $data);
+    }
+
+    public function listChatMessages(string $sessionId, string $chatJid, ?int $limit = null, ?int $offset = null, ?string $token = null): MessageSearchResponse
+    {
+        $data = $this->client->get("/api/v1/sessions/{$sessionId}/messages/chat/{$chatJid}", array_filter([
+            'limit' => $limit,
+            'offset' => $offset,
+        ], fn ($val) => $val !== null), $token);
+
+        return MessageSearchResponse::fromArray((array) $data);
+    }
+
+    public function sendReaction(string $sessionId, SendReactionRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendReactionRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/react", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendCtaUrl(string $sessionId, SendCtaUrlRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendCtaUrlRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/cta-url", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendQuickReply(string $sessionId, SendQuickReplyRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendQuickReplyRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/quick-reply", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendComment(string $sessionId, SendCommentRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendCommentRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/comment", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendInvoice(string $sessionId, SendInvoiceRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendInvoiceRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/invoice", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function cancelPaymentRequest(string $sessionId, CancelPaymentRequestRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof CancelPaymentRequestRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/cancel-payment", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function declinePaymentRequest(string $sessionId, DeclinePaymentRequestRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof DeclinePaymentRequestRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/decline-payment", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendHighlyStructured(string $sessionId, SendHighlyStructuredRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendHighlyStructuredRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/highly-structured", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
+    }
+
+    public function sendTemplateButtonReply(string $sessionId, SendTemplateButtonReplyRequest|array $request, ?string $token = null): SendResponse
+    {
+        $payload = $request instanceof SendTemplateButtonReplyRequest ? $request->toArray() : $request;
+        $data = $this->client->post("/api/v1/sessions/{$sessionId}/messages/template-button-reply", $payload, $token);
+
+        return SendResponse::fromArray((array) $data);
     }
 }
